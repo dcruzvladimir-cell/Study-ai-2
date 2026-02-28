@@ -233,8 +233,13 @@ app.post('/api/quiz/submit', async (req, res) => {
   }
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`✅ Server running at http://localhost:${PORT}`);
-  console.log(`📦 Supabase connected: ${supabaseUrl ? 'Yes ✓' : 'No ✗'}`);
-});
+// Start server (only in development, not on Vercel)
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`✅ Server running at http://localhost:${PORT}`);
+    console.log(`📦 Supabase connected: ${supabaseUrl ? 'Yes ✓' : 'No ✗'}`);
+  });
+}
+
+// Export for Vercel serverless functions
+module.exports = app;
