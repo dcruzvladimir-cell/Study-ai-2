@@ -18,12 +18,18 @@ if (!supabaseUrl || !supabaseKey) {
   console.warn('Please add SUPABASE_URL and SUPABASE_KEY to your .env file');
 }
 
-// validate environment before creating client
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Supabase environment variables missing:', { supabaseUrl, supabaseKey });
-  throw new Error('Supabase credentials not provided. Set SUPABASE_URL and SUPABASE_KEY in environment.');
+// create Supabase client only when credentials are present
+let supabase = null;
+if (supabaseUrl && supabaseKey) {
+  try {
+    supabase = createClient(supabaseUrl, supabaseKey);
+  } catch (err) {
+    console.error('Failed to initialize Supabase client:', err);
+    supabase = null;
+  }
+} else {
+  console.warn('Supabase environment variables missing:', { supabaseUrl, supabaseKey });
 }
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Set view engine to EJS
 app.set('view engine', 'ejs');
@@ -41,6 +47,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// helper: respond when Supabase is not configured
+function requireSupabase(res) {
+  if (!supabase) {
+    res.status(500).json({
+      error: 'Server not configured: SUPABASE_URL and SUPABASE_KEY are missing.\nSet them in Vercel Project Settings → Environment Variables.'
+    });
+    return false;
+  }
+  return true;
+}
+
 // Routes
 app.get('/', (req, res) => {
   // serve static HTML instead of API test page
@@ -49,6 +66,7 @@ app.get('/', (req, res) => {
 
 // API: Save notes
 app.post('/api/notes', async (req, res) => {
+  if (!requireSupabase(res)) return;
   try {
     const { notes, userId } = req.body;
     if (!notes) {
@@ -73,6 +91,7 @@ app.post('/api/notes', async (req, res) => {
 
 // API: Get notes
 app.get('/api/notes', async (req, res) => {
+  if (!requireSupabase(res)) return;
   try {
     const userId = req.query.userId || '1';
     const { data, error } = await supabase
@@ -91,6 +110,7 @@ app.get('/api/notes', async (req, res) => {
 
 // API: Generate flashcards
 app.post('/api/generate-flashcards', async (req, res) => {
+  if (!requireSupabase(res)) return;
   try {
     const { notes, difficulty, userId } = req.body;
     
@@ -129,6 +149,7 @@ app.post('/api/generate-flashcards', async (req, res) => {
 
 // API: Get flashcards
 app.get('/api/flashcards', async (req, res) => {
+  if (!requireSupabase(res)) return;
   try {
     const userId = req.query.userId || '1';
     const { data, error } = await supabase
@@ -146,6 +167,7 @@ app.get('/api/flashcards', async (req, res) => {
 
 // API: Generate quiz
 app.post('/api/generate-quiz', async (req, res) => {
+  if (!requireSupabase(res)) return;
   try {
     const { notes, difficulty, userId } = req.body;
     
@@ -191,6 +213,7 @@ app.post('/api/generate-quiz', async (req, res) => {
 
 // API: Get quiz
 app.get('/api/quiz', async (req, res) => {
+  if (!requireSupabase(res)) return;
   try {
     const userId = req.query.userId || '1';
     const { data, error } = await supabase
@@ -208,6 +231,7 @@ app.get('/api/quiz', async (req, res) => {
 
 // API: Submit quiz answer
 app.post('/api/quiz/submit', async (req, res) => {
+  if (!requireSupabase(res)) return;
   try {
     const { quizId, userAnswer, userId } = req.body;
     
