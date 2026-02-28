@@ -1,0 +1,2664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyAI - Smart Learning Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gui-scale: 1;
+            --accent: #4361ee;
+            --accent-rgb: 67, 97, 238;
+            --bg-primary: #f8f9fc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #eef0f5;
+            --text-primary: #1a1a2e;
+            --text-secondary: #4a4a6a;
+            --border-color: #e0e4ef;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.12);
+            --radius: 12px;
+            --radius-sm: 8px;
+            --radius-lg: 20px;
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-primary: 'Outfit', sans-serif;
+            --font-secondary: 'DM Sans', sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-tertiary: #252540;
+            --text-primary: #e8e8f0;
+            --text-secondary: #9090a8;
+            --border-color: #303050;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-secondary);
+            background: radial-gradient(ellipse at top left, color-mix(in srgb, var(--accent) 20%, var(--bg-primary)), var(--bg-primary));
+            color: var(--text-primary);
+            min-height: 100vh;
+            font-size: calc(16px * var(--gui-scale));
+            transition: background var(--transition), color var(--transition);
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: calc(64px * var(--gui-scale));
+            background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 15%, var(--bg-secondary)), var(--bg-secondary));
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 calc(24px * var(--gui-scale));
+            z-index: 100;
+            transition: background var(--transition), border-color var(--transition);
+        }
+
+        .logo {
+            font-family: var(--font-primary);
+            font-size: calc(1.5rem * var(--gui-scale));
+            font-weight: 700;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: calc(8px * var(--gui-scale));
+        }
+
+        .logo svg {
+            width: calc(32px * var(--gui-scale));
+            height: calc(32px * var(--gui-scale));
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: calc(4px * var(--gui-scale));
+            background: var(--bg-tertiary);
+            padding: calc(4px * var(--gui-scale));
+            border-radius: var(--radius);
+        }
+
+        .nav-tab {
+            padding: calc(8px * var(--gui-scale)) calc(16px * var(--gui-scale));
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: var(--font-secondary);
+            font-size: calc(0.9rem * var(--gui-scale));
+            font-weight: 500;
+            border-radius: calc(8px * var(--gui-scale));
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .nav-tab:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-tab.active {
+            background: var(--bg-secondary);
+            color: var(--accent);
+            box-shadow: var(--shadow);
+        }
+
+        .settings-btn {
+            width: calc(40px * var(--gui-scale));
+            height: calc(40px * var(--gui-scale));
+            border: none;
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+        }
+
+        .settings-btn:hover {
+            background: var(--accent);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .settings-btn svg {
+            width: calc(20px * var(--gui-scale));
+            height: calc(20px * var(--gui-scale));
+        }
+
+        /* Main Content */
+        .main {
+            margin-top: calc(64px * var(--gui-scale));
+            min-height: calc(100vh - 64px * var(--gui-scale));
+            padding: calc(32px * var(--gui-scale));
+        }
+
+        .section {
+            display: none;
+            max-width: 900px;
+            margin: 0 auto;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Notes Section */
+        .notes-section h1 {
+            font-family: var(--font-primary);
+            font-size: calc(2rem * var(--gui-scale));
+            margin-bottom: calc(8px * var(--gui-scale));
+        }
+
+        .notes-section .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: calc(24px * var(--gui-scale));
+            font-size: calc(1rem * var(--gui-scale));
+        }
+
+        .file-upload-container {
+            display: flex;
+            align-items: center;
+            gap: calc(16px * var(--gui-scale));
+            margin-bottom: calc(24px * var(--gui-scale));
+        }
+
+        .file-upload-btn {
+            display: flex;
+            align-items: center;
+            gap: calc(8px * var(--gui-scale));
+            padding: calc(12px * var(--gui-scale)) calc(20px * var(--gui-scale));
+            background: var(--bg-secondary);
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius);
+            color: var(--text-secondary);
+            font-family: var(--font-secondary);
+            font-size: calc(0.9rem * var(--gui-scale));
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .file-upload-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 5%, var(--bg-secondary));
+        }
+
+        .file-name {
+            color: var(--text-secondary);
+            font-size: calc(0.85rem * var(--gui-scale));
+        }
+
+        .textarea-container {
+            position: relative;
+            margin-bottom: calc(16px * var(--gui-scale));
+        }
+
+        .notes-textarea {
+            width: 100%;
+            min-height: calc(300px * var(--gui-scale));
+            padding: calc(16px * var(--gui-scale));
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-family: var(--font-secondary);
+            font-size: calc(1rem * var(--gui-scale));
+            resize: vertical;
+            transition: border-color var(--transition), background var(--transition);
+        }
+
+        .notes-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .char-counter {
+            position: absolute;
+            bottom: calc(12px * var(--gui-scale));
+            right: calc(12px * var(--gui-scale));
+            font-size: calc(0.75rem * var(--gui-scale));
+            color: var(--text-secondary);
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: calc(16px * var(--gui-scale)) calc(24px * var(--gui-scale));
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-family: var(--font-primary);
+            font-size: calc(1.1rem * var(--gui-scale));
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: calc(8px * var(--gui-scale));
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(var(--accent-rgb), 0.4);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .generate-btn.loading {
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: calc(20px * var(--gui-scale));
+            height: calc(20px * var(--gui-scale));
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .generation-status {
+            margin-top: calc(16px * var(--gui-scale));
+            padding: calc(12px * var(--gui-scale));
+            border-radius: var(--radius-sm);
+            font-size: calc(0.9rem * var(--gui-scale));
+            display: none;
+        }
+
+        .generation-status.success {
+            display: block;
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .generation-status.error {
+            display: block;
+            background: rgba(244, 63, 94, 0.1);
+            color: #f43f5e;
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+
+        /* Flashcards Section */
+        .flashcards-section h1 {
+            font-family: var(--font-primary);
+            font-size: calc(2rem * var(--gui-scale));
+            margin-bottom: calc(24px * var(--gui-scale));
+            text-align: center;
+        }
+
+        .flashcard-container {
+            perspective: 1000px;
+            margin-bottom: calc(24px * var(--gui-scale));
+        }
+
+        .flashcard {
+            width: 100%;
+            max-width: calc(500px * var(--gui-scale));
+            height: calc(300px * var(--gui-scale));
+            margin: 0 auto;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: calc(32px * var(--gui-scale));
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            font-size: calc(1.2rem * var(--gui-scale));
+            transition: background var(--transition);
+        }
+
+        .flashcard-front {
+            font-family: var(--font-primary);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .flashcard-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, var(--accent), rgba(var(--accent-rgb), 0.8));
+            color: white;
+            font-weight: 500;
+        }
+
+        .flashcard-instruction {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: calc(0.85rem * var(--gui-scale));
+            margin-bottom: calc(16px * var(--gui-scale));
+        }
+
+        .flashcard-controls {
+            display: flex;
+            justify-content: center;
+            gap: calc(16px * var(--gui-scale));
+            margin-bottom: calc(24px * var(--gui-scale));
+        }
+
+        .flashcard-nav {
+            width: calc(48px * var(--gui-scale));
+            height: calc(48px * var(--gui-scale));
+            border: 2px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+        }
+
+        .flashcard-nav:hover:not(:disabled) {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .flashcard-nav:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .flashcard-progress {
+            text-align: center;
+            font-size: calc(0.9rem * var(--gui-scale));
+            color: var(--text-secondary);
+            margin-bottom: calc(16px * var(--gui-scale));
+        }
+
+        .flashcard-actions {
+            display: flex;
+            justify-content: center;
+            gap: calc(12px * var(--gui-scale));
+        }
+
+        .action-btn {
+            padding: calc(10px * var(--gui-scale)) calc(20px * var(--gui-scale));
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-secondary);
+            font-size: calc(0.9rem * var(--gui-scale));
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .action-btn.know {
+            background: #10b981;
+            color: white;
+        }
+
+        .action-btn.dont-know {
+            background: #f43f5e;
+            color: white;
+        }
+
+        .action-btn.shuffle {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        /* Quiz Section */
+        .quiz-section h1 {
+            font-family: var(--font-primary);
+            font-size: calc(2rem * var(--gui-scale));
+            margin-bottom: calc(24px * var(--gui-scale));
+            text-align: center;
+        }
+
+        .quiz-container {
+            max-width: calc(600px * var(--gui-scale));
+            margin: 0 auto;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: calc(24px * var(--gui-scale));
+            padding: calc(16px * var(--gui-scale));
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .quiz-difficulty {
+            display: flex;
+            align-items: center;
+            gap: calc(8px * var(--gui-scale));
+        }
+
+        .difficulty-badge {
+            padding: calc(4px * var(--gui-scale)) calc(12px * var(--gui-scale));
+            border-radius: calc(20px * var(--gui-scale));
+            font-size: calc(0.8rem * var(--gui-scale));
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .difficulty-badge.easy {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+        }
+
+        .difficulty-badge.medium {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+
+        .difficulty-badge.hard {
+            background: rgba(244, 63, 94, 0.15);
+            color: #f43f5e;
+        }
+
+        .quiz-score {
+            font-family: var(--font-primary);
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .quiz-question {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: calc(24px * var(--gui-scale));
+            margin-bottom: calc(24px * var(--gui-scale));
+            box-shadow: var(--shadow-lg);
+            transition: background var(--transition);
+        }
+
+        .question-number {
+            font-size: calc(0.85rem * var(--gui-scale));
+            color: var(--text-secondary);
+            margin-bottom: calc(8px * var(--gui-scale));
+        }
+
+        .question-text {
+            font-family: var(--font-primary);
+            font-size: calc(1.3rem * var(--gui-scale));
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: calc(12px * var(--gui-scale));
+            margin-bottom: calc(24px * var(--gui-scale));
+        }
+
+        .quiz-option {
+            padding: calc(16px * var(--gui-scale));
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: calc(1rem * var(--gui-scale));
+            cursor: pointer;
+            transition: all var(--transition);
+            text-align: left;
+            font-family: var(--font-secondary);
+            color: var(--text-primary);
+        }
+
+        .quiz-option:hover:not(:disabled) {
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.05);
+        }
+
+        .quiz-option.selected {
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.1);
+        }
+
+        .quiz-option.correct {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.15);
+        }
+
+        .quiz-option.incorrect {
+            border-color: #f43f5e;
+            background: rgba(244, 63, 94, 0.15);
+        }
+
+        .quiz-option:disabled {
+            cursor: default;
+        }
+
+        .quiz-nav {
+            display: flex;
+            justify-content: space-between;
+            gap: calc(16px * var(--gui-scale));
+        }
+
+        .quiz-nav button {
+            flex: 1;
+        }
+
+        .quiz-result {
+            text-align: center;
+            padding: calc(32px * var(--gui-scale));
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .quiz-result h2 {
+            font-family: var(--font-primary);
+            font-size: calc(1.8rem * var(--gui-scale));
+            margin-bottom: calc(16px * var(--gui-scale));
+            color: var(--accent);
+        }
+
+        .quiz-result-score {
+            font-size: calc(3rem * var(--gui-scale));
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: calc(8px * var(--gui-scale));
+        }
+
+        .quiz-result-details {
+            color: var(--text-secondary);
+            margin-bottom: calc(24px * var(--gui-scale));
+        }
+
+        /* Stats Section */
+        .stats-section h1 {
+            font-family: var(--font-primary);
+            font-size: calc(2rem * var(--gui-scale));
+            margin-bottom: calc(24px * var(--gui-scale));
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(calc(200px * var(--gui-scale)), 1fr));
+            gap: calc(16px * var(--gui-scale));
+            margin-bottom: calc(32px * var(--gui-scale));
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            padding: calc(24px * var(--gui-scale));
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform var(--transition), background var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .stat-icon {
+            width: calc(48px * var(--gui-scale));
+            height: calc(48px * var(--gui-scale));
+            margin: 0 auto calc(12px * var(--gui-scale));
+            background: rgba(var(--accent-rgb), 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+        }
+
+        .stat-value {
+            font-family: var(--font-primary);
+            font-size: calc(2rem * var(--gui-scale));
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: calc(0.9rem * var(--gui-scale));
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: calc(48px * var(--gui-scale));
+            color: var(--text-secondary);
+        }
+
+        .empty-state svg {
+            width: calc(64px * var(--gui-scale));
+            height: calc(64px * var(--gui-scale));
+            margin-bottom: calc(16px * var(--gui-scale));
+            opacity: 0.5;
+        }
+
+        /* AI Chatbox */
+        .chat-toggle {
+            position: fixed;
+            bottom: calc(24px * var(--gui-scale));
+            right: calc(24px * var(--gui-scale));
+            width: calc(60px * var(--gui-scale));
+            height: calc(60px * var(--gui-scale));
+            background: var(--accent);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-lg);
+            z-index: 200;
+            transition: all var(--transition);
+        }
+
+        .chat-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .chat-toggle svg {
+            width: calc(28px * var(--gui-scale));
+            height: calc(28px * var(--gui-scale));
+            color: white;
+        }
+
+        .chat-toggle .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: calc(20px * var(--gui-scale));
+            height: calc(20px * var(--gui-scale));
+            background: #f43f5e;
+            color: white;
+            font-size: calc(0.7rem * var(--gui-scale));
+            font-weight: 700;
+            border-radius: 50%;
+            display: none;
+        }
+
+        .chatbox {
+            position: fixed;
+            bottom: calc(100px * var(--gui-scale));
+            right: calc(24px * var(--gui-scale));
+            width: calc(350px * var(--gui-scale));
+            height: calc(450px * var(--gui-scale));
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .chatbox.open {
+            display: flex;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Chat Section Tab */
+        .chat-section {
+            display: none;
+        }
+        
+        .chat-section.active {
+            display: block;
+        }
+        
+        .chat-section .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: calc(24px * var(--gui-scale));
+            font-size: calc(1rem * var(--gui-scale));
+        }
+        
+        .chat-container-tab {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            height: calc(500px * var(--gui-scale));
+            display: flex;
+            flex-direction: column;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .chat-messages-tab {
+            flex: 1;
+            overflow-y: auto;
+            padding: calc(16px * var(--gui-scale));
+            display: flex;
+            flex-direction: column;
+            gap: calc(12px * var(--gui-scale));
+        }
+        
+        .chat-message-tab {
+            padding: calc(12px * var(--gui-scale)) calc(16px * var(--gui-scale));
+            border-radius: calc(16px * var(--gui-scale));
+            max-width: 80%;
+            font-size: calc(0.9rem * var(--gui-scale));
+            line-height: 1.5;
+        }
+        
+        .chat-message-tab.ai {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            align-self: flex-start;
+            border-bottom-left-radius: calc(4px * var(--gui-scale));
+        }
+        
+        .chat-message-tab.user {
+            background: var(--accent);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: calc(4px * var(--gui-scale));
+        }
+        
+        .chat-typing-tab {
+            display: flex;
+            gap: 4px;
+            padding: calc(12px * var(--gui-scale)) calc(16px * var(--gui-scale));
+            background: var(--bg-tertiary);
+            border-radius: calc(16px * var(--gui-scale));
+            width: fit-content;
+        }
+        
+        .chat-typing-tab span {
+            width: calc(8px * var(--gui-scale));
+            height: calc(8px * var(--gui-scale));
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+        
+        .chat-typing-tab span:nth-child(1) { animation-delay: 0s; }
+        .chat-typing-tab span:nth-child(2) { animation-delay: 0.2s; }
+        .chat-typing-tab span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+        
+        .chat-input-container-tab {
+            display: flex;
+            gap: calc(8px * var(--gui-scale));
+            padding: calc(16px * var(--gui-scale));
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .chat-input-tab {
+            flex: 1;
+            padding: calc(12px * var(--gui-scale)) calc(16px * var(--gui-scale));
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-family: var(--font-secondary);
+            font-size: calc(0.9rem * var(--gui-scale));
+            resize: none;
+            outline: none;
+            transition: border-color var(--transition);
+        }
+        
+        .chat-input-tab:focus {
+            border-color: var(--accent);
+        }
+        
+        .chat-send-tab {
+            width: calc(44px * var(--gui-scale));
+            height: calc(44px * var(--gui-scale));
+            background: var(--accent);
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all var(--transition);
+        }
+        
+        .chat-send-tab:hover {
+            transform: scale(1.05);
+        }
+
+        .chat-header {
+            padding: calc(16px * var(--gui-scale));
+            background: var(--accent);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-title {
+            font-family: var(--font-primary);
+            font-weight: 600;
+            font-size: calc(1rem * var(--gui-scale));
+            display: flex;
+            align-items: center;
+            gap: calc(8px * var(--gui-scale));
+        }
+
+        .chat-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: calc(28px * var(--gui-scale));
+            height: calc(28px * var(--gui-scale));
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background var(--transition);
+        }
+
+        .chat-close:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: calc(16px * var(--gui-scale));
+            display: flex;
+            flex-direction: column;
+            gap: calc(12px * var(--gui-scale));
+        }
+
+        .chat-message {
+            max-width: 85%;
+            padding: calc(10px * var(--gui-scale)) calc(14px * var(--gui-scale));
+            border-radius: var(--radius);
+            font-size: calc(0.9rem * var(--gui-scale));
+            line-height: 1.4;
+        }
+
+        .chat-message.ai {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-message.user {
+            background: var(--accent);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-typing {
+            display: none;
+            padding: calc(10px * var(--gui-scale)) calc(14px * var(--gui-scale));
+            background: var(--bg-tertiary);
+            border-radius: var(--radius);
+            align-self: flex-start;
+        }
+
+        .chat-typing.visible {
+            display: flex;
+            gap: 4px;
+        }
+
+        .chat-typing span {
+            width: 8px;
+            height: 8px;
+            background: var(--text-secondary);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+
+        .chat-typing span:nth-child(1) { animation-delay: 0s; }
+        .chat-typing span:nth-child(2) { animation-delay: 0.2s; }
+        .chat-typing span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-8px); }
+        }
+
+        .chat-input-container {
+            padding: calc(12px * var(--gui-scale));
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: calc(8px * var(--gui-scale));
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: calc(10px * var(--gui-scale));
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-secondary);
+            font-size: calc(0.9rem * var(--gui-scale));
+            resize: none;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .chat-send {
+            width: calc(40px * var(--gui-scale));
+            height: calc(40px * var(--gui-scale));
+            background: var(--accent);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background var(--transition);
+        }
+
+        .chat-send:hover {
+            background: rgba(var(--accent-rgb), 0.8);
+        }
+
+        /* Settings Panel */
+        .settings-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 300;
+            opacity: 0;
+            visibility: hidden;
+            display: none;
+            transition: all var(--transition);
+        }
+
+        .settings-overlay.open {
+            opacity: 1;
+            visibility: visible;
+            display: block;
+        }
+
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: calc(320px * var(--gui-scale));
+            height: 100vh;
+            background: var(--bg-secondary);
+            z-index: 301;
+            transform: translateX(100%);
+            transition: transform var(--transition);
+            overflow-y: auto;
+            border-left: 1px solid var(--border-color);
+            display: block;
+        }
+
+        .settings-panel.open {
+            transform: translateX(0);
+            display: block;
+        }
+
+        .settings-header {
+            padding: calc(20px * var(--gui-scale));
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .settings-header h2 {
+            font-family: var(--font-primary);
+            font-size: calc(1.25rem * var(--gui-scale));
+        }
+
+        .settings-close {
+            width: calc(32px * var(--gui-scale));
+            height: calc(32px * var(--gui-scale));
+            border: none;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+        }
+
+        .settings-close:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        .settings-content {
+            padding: calc(20px * var(--gui-scale));
+        }
+
+        .settings-section {
+            margin-bottom: calc(24px * var(--gui-scale));
+        }
+
+        .settings-section h3 {
+            font-family: var(--font-primary);
+            font-size: calc(0.85rem * var(--gui-scale));
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: calc(12px * var(--gui-scale));
+        }
+
+        .setting-item {
+            margin-bottom: calc(16px * var(--gui-scale));
+        }
+
+        .setting-label {
+            display: block;
+            font-size: calc(0.9rem * var(--gui-scale));
+            font-weight: 500;
+            margin-bottom: calc(8px * var(--gui-scale));
+            color: var(--text-primary);
+        }
+
+        .setting-value {
+            display: flex;
+            align-items: center;
+            gap: calc(8px * var(--gui-scale));
+        }
+
+        /* Slider */
+        .slider {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: calc(18px * var(--gui-scale));
+            height: calc(18px * var(--gui-scale));
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform var(--transition);
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .slider-value {
+            font-size: calc(0.85rem * var(--gui-scale));
+            color: var(--text-secondary);
+            min-width: calc(40px * var(--gui-scale));
+            text-align: right;
+        }
+
+        /* Color Picker */
+        .color-options {
+            display: flex;
+            gap: calc(8px * var(--gui-scale));
+            flex-wrap: wrap;
+        }
+
+        .color-option {
+            width: calc(36px * var(--gui-scale));
+            height: calc(36px * var(--gui-scale));
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.active {
+            border-color: var(--text-primary);
+        }
+
+        /* Theme Toggle */
+        .theme-options {
+            display: flex;
+            gap: calc(8px * var(--gui-scale));
+        }
+
+        .theme-option {
+            flex: 1;
+            padding: calc(10px * var(--gui-scale));
+            border: 2px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-family: var(--font-secondary);
+            font-size: calc(0.85rem * var(--gui-scale));
+            font-weight: 500;
+            transition: all var(--transition);
+            text-align: center;
+        }
+
+        .theme-option:hover {
+            border-color: var(--accent);
+        }
+
+        .theme-option.active {
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.1);
+            color: var(--accent);
+        }
+
+        /* Select */
+        .setting-select {
+            width: 100%;
+            padding: calc(10px * var(--gui-scale));
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-secondary);
+            font-size: calc(0.9rem * var(--gui-scale));
+            cursor: pointer;
+        }
+
+        .setting-select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: calc(48px * var(--gui-scale));
+            height: calc(26px * var(--gui-scale));
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: var(--bg-tertiary);
+            border-radius: calc(26px * var(--gui-scale));
+            transition: var(--transition);
+        }
+
+        .toggle-slider:before {
+            content: '';
+            position: absolute;
+            height: calc(20px * var(--gui-scale));
+            width: calc(20px * var(--gui-scale));
+            left: calc(3px * var(--gui-scale));
+            bottom: calc(3px * var(--gui-scale));
+            background: white;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: var(--accent);
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(calc(22px * var(--gui-scale)));
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-tabs {
+                display: none;
+            }
+
+            .mobile-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: var(--bg-secondary);
+                border-top: 1px solid var(--border-color);
+                padding: calc(8px * var(--gui-scale));
+                z-index: 100;
+                justify-content: space-around;
+            }
+
+            .mobile-nav-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+                padding: calc(8px * var(--gui-scale));
+                color: var(--text-secondary);
+                background: none;
+                border: none;
+                cursor: pointer;
+                font-size: calc(0.7rem * var(--gui-scale));
+                transition: color var(--transition);
+            }
+
+            .mobile-nav-item.active {
+                color: var(--accent);
+            }
+
+            .mobile-nav-item svg {
+                width: calc(24px * var(--gui-scale));
+                height: calc(24px * var(--gui-scale));
+            }
+
+            .chatbox {
+                width: calc(100vw - 48px);
+                right: calc(24px * var(--gui-scale));
+                bottom: calc(80px * var(--gui-scale));
+            }
+
+            .settings-panel {
+                width: 100%;
+            }
+
+            .main {
+                padding-bottom: calc(80px * var(--gui-scale));
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-nav {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+            StudyAI
+        </div>
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-tab="notes">Notes</button>
+            <button class="nav-tab" data-tab="flashcards">Flashcards</button>
+            <button class="nav-tab" data-tab="quiz">Quiz</button>
+            <button class="nav-tab" data-tab="stats">Stats</button>
+            <button class="nav-tab" data-tab="chat">AI Chat</button>
+        </nav>
+        <button class="settings-btn" id="settingsBtn" onclick="playBeep(); document.getElementById('settingsPanel').classList.add('open'); document.getElementById('settingsOverlay').classList.add('open');">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+            </svg>
+        </button>
+    </header>
+
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav">
+        <button class="mobile-nav-item active" data-tab="notes">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                <polyline points="14,2 14,8 20,8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            Notes
+        </button>
+        <button class="mobile-nav-item" data-tab="flashcards">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                <path d="M12 8v8"/>
+                <path d="M8 12h8"/>
+            </svg>
+            Cards
+        </button>
+        <button class="mobile-nav-item" data-tab="quiz">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            Quiz
+        </button>
+        <button class="mobile-nav-item" data-tab="stats">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10"/>
+                <line x1="12" y1="20" x2="12" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+            Stats
+        </button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Notes Section -->
+        <section class="section notes-section active" id="notes">
+            <h1>Paste Your Notes</h1>
+            <p class="subtitle">Paste your study notes below or upload a file, and I'll generate flashcards and quiz questions from them.</p>
+            <div class="file-upload-container">
+                <input type="file" id="fileInput" accept=".txt,.md,.doc,.docx,.pdf" hidden>
+                <button class="file-upload-btn" id="fileUploadBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    Upload File
+                </button>
+                <span class="file-name" id="fileName"></span>
+            </div>
+            <div class="textarea-container">
+                <textarea class="notes-textarea" id="notesInput" placeholder="Paste your notes here...
+
+Example:
+The mitochondria is the powerhouse of the cell. It converts glucose into ATP energy through cellular respiration. The process involves glycolysis, Krebs cycle, and electron transport chain.
+
+Photosynthesis converts light energy into chemical energy. It occurs in chloroplasts. The main equation is: 6CO2 + 6H2O + light energy → C6H12O6 + 6O2"></textarea>
+                <span class="char-counter"><span id="charCount">0</span>/5000</span>
+            </div>
+            <button class="generate-btn" id="generateBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                    <polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/>
+                </svg>
+                Generate Flashcards & Quiz
+            </button>
+            <div class="generation-status" id="generationStatus"></div>
+        </section>
+
+        <!-- Flashcards Section -->
+        <section class="section flashcards-section" id="flashcards">
+            <h1>Flashcards</h1>
+            <div id="flashcardsContent">
+                <div class="empty-state" id="flashcardsEmpty">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="4" width="20" height="16" rx="2"/>
+                        <path d="M12 8v8"/>
+                        <path d="M8 12h8"/>
+                    </svg>
+                    <p>No flashcards yet. Generate some from your notes!</p>
+                </div>
+                <div id="flashcardsActive" style="display: none;">
+                    <p class="flashcard-instruction">Click the card to flip • Use arrow keys to navigate</p>
+                    <div class="flashcard-progress">
+                        <span id="cardProgress">1</span> / <span id="cardTotal">10</span>
+                    </div>
+                    <div class="flashcard-container">
+                        <div class="flashcard" id="flashcard">
+                            <div class="flashcard-face flashcard-front" id="cardFront">
+                                Question goes here
+                            </div>
+                            <div class="flashcard-face flashcard-back" id="cardBack">
+                                Answer goes here
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flashcard-controls">
+                        <button class="flashcard-nav" id="prevCard">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                                <polyline points="15,18 9,12 15,6"/>
+                            </svg>
+                        </button>
+                        <button class="flashcard-nav" id="nextCard">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                                <polyline points="9,18 15,12 9,6"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="flashcard-actions">
+                        <button class="action-btn dont-know" id="dontKnowBtn">Don't Know</button>
+                        <button class="action-btn know" id="knowBtn">Know It!</button>
+                        <button class="action-btn shuffle" id="shuffleBtn">Shuffle</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section class="section quiz-section" id="quiz">
+            <h1>Quiz Time!</h1>
+            <div id="quizContent">
+                <div class="empty-state" id="quizEmpty">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    <p>No quiz yet. Generate one from your notes!</p>
+                </div>
+                <div class="quiz-container" id="quizActive" style="display: none;">
+                    <div class="quiz-header">
+                        <div class="quiz-difficulty">
+                            <span class="difficulty-badge easy" id="difficultyBadge">Easy</span>
+                        </div>
+                        <div class="quiz-score">Score: <span id="currentScore">0</span></div>
+                    </div>
+                    <div class="quiz-question">
+                        <div class="question-number">Question <span id="questionNum">1</span></div>
+                        <div class="question-text" id="questionText">Question text here?</div>
+                    </div>
+                    <div class="quiz-options" id="quizOptions">
+                        <!-- Options generated by JS -->
+                    </div>
+                    <div class="quiz-nav">
+                        <button class="action-btn shuffle" id="prevQuestion">Previous</button>
+                        <button class="action-btn know" id="nextQuestion">Next</button>
+                    </div>
+                </div>
+                <div class="quiz-result" id="quizResult" style="display: none;">
+                    <h2>Quiz Complete!</h2>
+                    <div class="quiz-result-score" id="finalScore">0%</div>
+                    <div class="quiz-result-details" id="resultDetails">You got 0 out of 0 correct</div>
+                    <button class="generate-btn" id="retryQuiz" style="max-width: 200px; margin: 0 auto;">Try Again</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="section stats-section" id="stats">
+            <h1>Your Progress</h1>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                            <rect x="2" y="4" width="20" height="16" rx="2"/>
+                        </svg>
+                    </div>
+                    <div class="stat-value" id="cardsStudied">0</div>
+                    <div class="stat-label">Cards Studied</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                    </div>
+                    <div class="stat-value" id="studyStreak">0</div>
+                    <div class="stat-label">Study Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                            <polyline points="22,4 12,14.01 9,11.01"/>
+                        </svg>
+                    </div>
+                    <div class="stat-value" id="avgScore">0%</div>
+                    <div class="stat-label">Avg Quiz Score</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                    </div>
+                    <div class="stat-value" id="quizzesTaken">0</div>
+                    <div class="stat-label">Quizzes Taken</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chat Section -->
+        <section class="section chat-section" id="chat">
+            <h1>AI Study Assistant</h1>
+            <p class="subtitle">Ask me anything about your notes or study material!</p>
+            <div class="chat-container-tab">
+                <div class="chat-messages-tab" id="chatMessagesTab">
+                    <div class="chat-message-tab ai">Hi! I'm your AI study assistant. Ask me anything about your notes or study material!</div>
+                    <div class="chat-typing-tab" id="chatTypingTab" style="display: none;">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+                <div class="chat-input-container-tab">
+                    <textarea class="chat-input-tab" id="chatInputTab" placeholder="Ask a question..." rows="1"></textarea>
+                    <button class="chat-send-tab" id="chatSendTab">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                            <line x1="22" y1="2" x2="11" y2="13"/>
+                            <polygon points="22,2 15,22 11,13 2,9"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+        <!-- Main Content -->
+        <div class="chat-messages" id="chatMessages">
+            <div class="chat-message ai">Hi! I'm your AI study assistant. Ask me anything about your notes or study material!</div>
+            <div class="chat-typing" id="chatTyping">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="chat-input-container">
+            <textarea class="chat-input" id="chatInput" placeholder="Ask a question..." rows="1"></textarea>
+            <button class="chat-send" id="chatSend">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+                    <line x1="22" y1="2" x2="11" y2="13"/>
+                    <polygon points="22,2 15,22 11,13 2,9"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div class="settings-overlay" id="settingsOverlay" onclick="this.classList.remove('open'); document.getElementById('settingsPanel').classList.remove('open');"></div>
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h2>Settings</h2>
+            <button class="settings-close" id="settingsClose" onclick="document.getElementById('settingsPanel').classList.remove('open'); document.getElementById('settingsOverlay').classList.remove('open');">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        <div class="settings-content">
+            <div class="settings-section">
+                <h3>Display</h3>
+                <div class="setting-item">
+                    <label class="setting-label">Font Family</label>
+                    <select class="setting-select" id="fontFamily" onchange="document.documentElement.style.setProperty('--font-primary', this.value); document.documentElement.style.setProperty('--font-secondary', this.value);">
+                        <option value="Outfit, sans-serif">Outfit (Default)</option>
+                        <option value="DM Sans, sans-serif">DM Sans</option>
+                        <option value="Poppins, sans-serif">Poppins</option>
+                        <option value="Inter, sans-serif">Inter</option>
+                        <option value="Nunito, sans-serif">Nunito</option>
+                        <option value="Playfair Display, serif">Playfair Display</option>
+                        <option value="Merriweather, serif">Merriweather</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label class="setting-label">GUI Scale</label>
+                    <div class="setting-value">
+                        <input type="range" class="slider" id="guiScale" min="0.8" max="1.5" step="0.1" value="1" oninput="document.documentElement.style.setProperty('--gui-scale', this.value); document.getElementById('guiScaleValue').textContent = parseFloat(this.value).toFixed(1);">
+                        <span class="slider-value" id="guiScaleValue">1.0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="settings-section">
+                <h3>Appearance</h3>
+                <div class="setting-item">
+                    <label class="setting-label">Accent Color</label>
+                    <div class="color-options">
+                        <button class="color-option active" data-color="#4361ee" style="background: #4361ee;" onclick="playBeep(); document.documentElement.style.setProperty('--accent', '#4361ee'); document.documentElement.style.setProperty('--accent-rgb', '67, 97, 238');"></button>
+                        <button class="color-option" data-color="#10b981" style="background: #10b981;" onclick="playBeep(); document.documentElement.style.setProperty('--accent', '#10b981'); document.documentElement.style.setProperty('--accent-rgb', '16, 185, 129');"></button>
+                        <button class="color-option" data-color="#f43f5e" style="background: #f43f5e;" onclick="playBeep(); document.documentElement.style.setProperty('--accent', '#f43f5e'); document.documentElement.style.setProperty('--accent-rgb', '244, 63, 94');"></button>
+                        <button class="color-option" data-color="#f59e0b" style="background: #f59e0b;" onclick="playBeep(); document.documentElement.style.setProperty('--accent', '#f59e0b'); document.documentElement.style.setProperty('--accent-rgb', '245, 158, 11');"></button>
+                        <button class="color-option" data-color="#8b5cf6" style="background: #8b5cf6;" onclick="playBeep(); document.documentElement.style.setProperty('--accent', '#8b5cf6'); document.documentElement.style.setProperty('--accent-rgb', '139, 92, 246');"></button>
+                        <button class="color-option" data-color="#1a1a2e" style="background: #1a1a2e;" onclick="playBeep(); document.documentElement.style.setProperty('--accent', '#1a1a2e'); document.documentElement.style.setProperty('--accent-rgb', '26, 26, 46');"></button>
+                        <button class="color-option" data-color="#6b7280" style="background: #6b7280;" onclick="playBeep(); document.documentElement.style.setProperty('--accent', '#6b7280'); document.documentElement.style.setProperty('--accent-rgb', '107, 114, 128');"></button>
+                        <button class="color-option" data-color="#9ca3af" style="background: #9ca3af;" onclick="playBeep(); document.documentElement.style.setProperty('--accent', '#9ca3af'); document.documentElement.style.setProperty('--accent-rgb', '156, 163, 175');"></button>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label class="setting-label">Theme</label>
+                    <div class="theme-options">
+                        <button class="theme-option" data-theme="light" onclick="playBeep(); document.documentElement.setAttribute('data-theme', 'light');">Light</button>
+                        <button class="theme-option" data-theme="dark" onclick="playBeep(); document.documentElement.setAttribute('data-theme', 'dark');">Dark</button>
+                        <button class="theme-option active" data-theme="auto" onclick="playBeep(); document.documentElement.removeAttribute('data-theme');">Auto</button>
+                    </div>
+                </div>
+            </div>
+            <div class="settings-section">
+                <h3>Quiz Settings</h3>
+                <div class="setting-item">
+                    <label class="setting-label">Difficulty</label>
+                    <select class="setting-select" id="quizDifficulty" onchange="document.getElementById('difficultyBadge').textContent = this.value.charAt(0).toUpperCase() + this.value.slice(1);">
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+            </div>
+            <div class="settings-section">
+                <h3>Flashcard Settings</h3>
+                <div class="setting-item">
+                    <label class="setting-label">Number of Cards</label>
+                    <div class="setting-value">
+                        <input type="range" class="slider" id="cardAmount" min="5" max="50" step="5" value="10" oninput="document.getElementById('cardAmountValue').textContent = this.value;">
+                        <span class="slider-value" id="cardAmountValue">10</span>
+                    </div>
+                </div>
+            </div>
+            <div class="settings-section">
+                <h3>Sound</h3>
+                <div class="setting-item">
+                    <label class="setting-label">Sound Effects</label>
+                    <div class="setting-value">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="soundEnabled" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label class="setting-label">Volume</label>
+                    <div class="setting-value">
+                        <input type="range" class="slider" id="volume" min="0" max="100" value="50" oninput="document.getElementById('volumeValue').textContent = this.value + '%';">
+                        <span class="slider-value" id="volumeValue">50%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple beep function for sound effects
+        function playBeep() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.frequency.value = 800;
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.05);
+            } catch(e) {}
+        }
+        
+        // ===== STATE =====
+        const state = {
+            flashcards: [],
+            quizQuestions: [],
+            currentCardIndex: 0,
+            currentQuestionIndex: 0,
+            quizScore: 0,
+            cardsStudied: 0,
+            quizzesTaken: 0,
+            totalQuizScore: 0,
+            studyStreak: 0,
+            lastStudyDate: null,
+            settings: {
+                guiScale: 1,
+                fontFamily: 'Outfit, sans-serif',
+                accentColor: '#4361ee',
+                theme: 'auto',
+                quizDifficulty: 'easy',
+                cardAmount: 10,
+                soundEnabled: true,
+                volume: 50
+            },
+            notes: ''
+        };
+
+        // ===== DOM ELEMENTS =====
+        const elements = {
+            notesInput: document.getElementById('notesInput'),
+            charCount: document.getElementById('charCount'),
+            generateBtn: document.getElementById('generateBtn'),
+            generationStatus: document.getElementById('generationStatus'),
+            flashcard: document.getElementById('flashcard'),
+            cardFront: document.getElementById('cardFront'),
+            cardBack: document.getElementById('cardBack'),
+            cardProgress: document.getElementById('cardProgress'),
+            cardTotal: document.getElementById('cardTotal'),
+            prevCard: document.getElementById('prevCard'),
+            nextCard: document.getElementById('nextCard'),
+            knowBtn: document.getElementById('knowBtn'),
+            dontKnowBtn: document.getElementById('dontKnowBtn'),
+            shuffleBtn: document.getElementById('shuffleBtn'),
+            flashcardsEmpty: document.getElementById('flashcardsEmpty'),
+            flashcardsActive: document.getElementById('flashcardsActive'),
+            quizEmpty: document.getElementById('quizEmpty'),
+            quizActive: document.getElementById('quizActive'),
+            quizResult: document.getElementById('quizResult'),
+            questionNum: document.getElementById('questionNum'),
+            questionText: document.getElementById('questionText'),
+            quizOptions: document.getElementById('quizOptions'),
+            difficultyBadge: document.getElementById('difficultyBadge'),
+            currentScore: document.getElementById('currentScore'),
+            finalScore: document.getElementById('finalScore'),
+            resultDetails: document.getElementById('resultDetails'),
+            prevQuestion: document.getElementById('prevQuestion'),
+            nextQuestion: document.getElementById('nextQuestion'),
+            retryQuiz: document.getElementById('retryQuiz'),
+            settingsBtn: document.getElementById('settingsBtn'),
+            settingsPanel: document.getElementById('settingsPanel'),
+            settingsOverlay: document.getElementById('settingsOverlay'),
+            settingsClose: document.getElementById('settingsClose'),
+            guiScale: document.getElementById('guiScale'),
+            guiScaleValue: document.getElementById('guiScaleValue'),
+            fontFamily: document.getElementById('fontFamily'),
+            cardAmount: document.getElementById('cardAmount'),
+            cardAmountValue: document.getElementById('cardAmountValue'),
+            quizDifficulty: document.getElementById('quizDifficulty'),
+            soundEnabled: document.getElementById('soundEnabled'),
+            volume: document.getElementById('volume'),
+            volumeValue: document.getElementById('volumeValue'),
+            chatToggle: document.getElementById('chatToggle'),
+            chatbox: document.getElementById('chatbox'),
+            chatClose: document.getElementById('chatClose'),
+            chatMessages: document.getElementById('chatMessages'),
+            chatInput: document.getElementById('chatInput'),
+            chatSend: document.getElementById('chatSend'),
+            chatTyping: document.getElementById('chatTyping'),
+            cardsStudied: document.getElementById('cardsStudied'),
+            studyStreak: document.getElementById('studyStreak'),
+            avgScore: document.getElementById('avgScore'),
+            quizzesTaken: document.getElementById('quizzesTaken')
+        };
+
+        // ===== SOUND EFFECTS =====
+        let audioCtx = null;
+        
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+        
+        // Initialize audio on first user interaction
+        document.addEventListener('click', initAudio, { once: true });
+        document.addEventListener('keydown', initAudio, { once: true });
+        
+        const sounds = {
+            flip: () => playSoftTone(350, 0.15, 'sine'),
+            correct: () => playSuccessSound(),
+            wrong: () => playErrorSound(),
+            click: () => playSoftTone(800, 0.05, 'sine')
+        };
+
+        function playSoftTone(freq, duration, type = 'sine') {
+            if (!state.settings.soundEnabled) return;
+            const ctx = initAudio();
+            if (!ctx) return;
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            oscillator.frequency.value = freq;
+            oscillator.type = type;
+            
+            const volume = (state.settings.volume / 100) * 0.3;
+            gainNode.gain.setValueAtTime(0, ctx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(volume, ctx.currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+            
+            oscillator.start();
+            oscillator.stop(ctx.currentTime + duration);
+        }
+
+        function playSuccessSound() {
+            if (!state.settings.soundEnabled) return;
+            const ctx = initAudio();
+            if (!ctx) return;
+            const volume = (state.settings.volume / 100) * 0.25;
+            
+            // Pleasant major chord arpeggio
+            const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+            notes.forEach((freq, i) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.frequency.value = freq;
+                osc.type = 'sine';
+                
+                const startTime = ctx.currentTime + i * 0.08;
+                gain.gain.setValueAtTime(0, startTime);
+                gain.gain.linearRampToValueAtTime(volume, startTime + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.3);
+                
+                osc.start(startTime);
+                osc.stop(startTime + 0.3);
+            });
+        }
+
+        function playErrorSound() {
+            if (!state.settings.soundEnabled) return;
+            const ctx = initAudio();
+            if (!ctx) return;
+            const volume = (state.settings.volume / 100) * 0.2;
+            
+            // Soft low tone
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = 220;
+            osc.type = 'triangle';
+            
+            gain.gain.setValueAtTime(0, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(volume, ctx.currentTime + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+            
+            osc.start();
+            osc.stop(ctx.currentTime + 0.25);
+        }
+
+        function playTone(freq, duration) {
+            if (!state.settings.soundEnabled) return;
+            const ctx = initAudio();
+            if (!ctx) return;
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            oscillator.frequency.value = freq;
+            oscillator.type = 'sine';
+            gainNode.gain.value = state.settings.volume / 200;
+            oscillator.start();
+            oscillator.stop(ctx.currentTime + duration);
+        }
+
+        // ===== SETTINGS =====
+        function loadSettings() {
+            const saved = localStorage.getItem('studyai_settings');
+            if (saved) {
+                state.settings = { ...state.settings, ...JSON.parse(saved) };
+            }
+            applySettings();
+        }
+
+        function saveSettings() {
+            localStorage.setItem('studyai_settings', JSON.stringify(state.settings));
+        }
+
+        function applySettings() {
+            document.documentElement.style.setProperty('--gui-scale', state.settings.guiScale);
+            document.documentElement.style.setProperty('--accent', state.settings.accentColor);
+            document.documentElement.style.setProperty('--font-primary', state.settings.fontFamily);
+            document.documentElement.style.setProperty('--font-secondary', state.settings.fontFamily);
+            
+            const rgb = hexToRgb(state.settings.accentColor);
+            document.documentElement.style.setProperty('--accent-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+            
+            // Theme
+            if (state.settings.theme === 'auto') {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', state.settings.theme);
+            }
+
+            // Update UI controls
+            elements.guiScale.value = state.settings.guiScale;
+            elements.guiScaleValue.textContent = state.settings.guiScale.toFixed(1);
+            elements.fontFamily.value = state.settings.fontFamily;
+            elements.cardAmount.value = state.settings.cardAmount;
+            elements.cardAmountValue.textContent = state.settings.cardAmount;
+            elements.quizDifficulty.value = state.settings.quizDifficulty;
+            elements.soundEnabled.checked = state.settings.soundEnabled;
+            elements.volume.value = state.settings.volume;
+            elements.volumeValue.textContent = state.settings.volume + '%';
+
+            // Color options
+            document.querySelectorAll('.color-option').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.color === state.settings.accentColor);
+            });
+
+            // Theme options
+            document.querySelectorAll('.theme-option').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === state.settings.theme);
+            });
+
+            // Difficulty badge
+            updateDifficultyBadge();
+        }
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : { r: 67, g: 97, b: 238 };
+        }
+
+        // ===== NAVIGATION =====
+        function switchTab(tabName) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.mobile-nav-item').forEach(t => t.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active');
+            document.querySelectorAll(`.nav-tab[data-tab="${tabName}"]`).forEach(t => t.classList.add('active'));
+            document.querySelectorAll(`.mobile-nav-item[data-tab="${tabName}"]`).forEach(t => t.classList.add('active'));
+
+            if (tabName === 'flashcards') updateFlashcardDisplay();
+            if (tabName === 'quiz') updateQuizDisplay();
+            if (tabName === 'stats') updateStatsDisplay();
+        }
+
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+        });
+
+        document.querySelectorAll('.mobile-nav-item').forEach(tab => {
+            tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+        });
+
+        // ===== NOTES & GENERATION =====
+        elements.fileInput = document.getElementById('fileInput');
+        elements.fileUploadBtn = document.getElementById('fileUploadBtn');
+        elements.fileName = document.getElementById('fileName');
+        
+        elements.fileUploadBtn.addEventListener('click', () => {
+            elements.fileInput.click();
+        });
+        
+        elements.fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            elements.fileName.textContent = file.name;
+            sounds.click();
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                elements.notesInput.value = event.target.result;
+                elements.charCount.textContent = elements.notesInput.value.length;
+                state.notes = elements.notesInput.value;
+                localStorage.setItem('studyai_notes', state.notes);
+            };
+            
+            if (file.name.endsWith('.pdf')) {
+                showStatus('PDF parsing is limited. For best results, copy-paste your notes.', 'error');
+            } else {
+                reader.readAsText(file);
+            }
+        });
+        
+        elements.notesInput.addEventListener('input', () => {
+            const len = elements.notesInput.value.length;
+            elements.charCount.textContent = len;
+            state.notes = elements.notesInput.value;
+            localStorage.setItem('studyai_notes', state.notes);
+        });
+
+        // Load saved notes
+        const savedNotes = localStorage.getItem('studyai_notes');
+        if (savedNotes) {
+            elements.notesInput.value = savedNotes;
+            state.notes = savedNotes;
+            elements.charCount.textContent = savedNotes.length;
+        }
+
+        elements.generateBtn.addEventListener('click', async () => {
+            const notes = elements.notesInput.value.trim();
+            if (!notes) {
+                showStatus('Please enter some notes first!', 'error');
+                return;
+            }
+            if (notes.length > 5000) {
+                showStatus('Notes are too long. Please limit to 5000 characters.', 'error');
+                return;
+            }
+
+            elements.generateBtn.classList.add('loading');
+            elements.generateBtn.innerHTML = '<div class="spinner"></div> Generating...';
+            showStatus('', '');
+
+            // Simulate AI generation delay
+            await new Promise(r => setTimeout(r, 1500));
+
+            generateContent(notes);
+            
+            elements.generateBtn.classList.remove('loading');
+            elements.generateBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                    <polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/>
+                </svg>
+                Generate Flashcards & Quiz
+            `;
+
+            showStatus(`Generated ${state.flashcards.length} flashcards and ${state.quizQuestions.length} quiz questions!`, 'success');
+            sounds.click();
+        });
+
+        function showStatus(message, type) {
+            elements.generationStatus.textContent = message;
+            elements.generationStatus.className = 'generation-status ' + type;
+        }
+
+        function generateContent(notes) {
+            const lines = notes.split('\n').filter(l => l.trim());
+            const sentences = notes.split(/[.!?]+/).filter(s => s.trim().length > 10);
+            
+            // Generate flashcards
+            const flashcards = [];
+            const keywords = extractKeywords(notes);
+            
+            keywords.forEach((keyword, i) => {
+                if (i >= state.settings.cardAmount) return;
+                const context = findContextForKeyword(notes, keyword);
+                flashcards.push({
+                    question: `What is "${keyword}"?`,
+                    answer: context || `Definition of ${keyword} from your notes.`
+                });
+            });
+
+            // If not enough flashcards, create from sentences
+            if (flashcards.length < 5) {
+                sentences.slice(0, state.settings.cardAmount).forEach((sentence, i) => {
+                    if (!flashcards[i]) {
+                        flashcards.push({
+                            question: `Can you summarize: "${sentence.trim().substring(0, 50)}..."?`,
+                            answer: sentence.trim()
+                        });
+                    }
+                });
+            }
+
+            state.flashcards = flashcards.slice(0, state.settings.cardAmount);
+            localStorage.setItem('studyai_flashcards', JSON.stringify(state.flashcards));
+
+            // Generate quiz questions
+            const quizQuestions = [];
+            const difficulty = state.settings.quizDifficulty;
+            
+            sentences.slice(0, Math.min(sentences.length, 10)).forEach((sentence, i) => {
+                const q = generateQuizQuestion(sentence.trim(), keywords, difficulty, i);
+                if (q) quizQuestions.push(q);
+            });
+
+            state.quizQuestions = quizQuestions;
+            localStorage.setItem('studyai_quiz', JSON.stringify(state.quizQuestions));
+        }
+
+        function extractKeywords(text) {
+            const words = text.toLowerCase().split(/\W+/);
+            const stopWords = ['the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'may', 'might', 'must', 'shall', 'can', 'need', 'dare', 'ought', 'used', 'to', 'of', 'in', 'for', 'on', 'with', 'at', 'by', 'from', 'as', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'between', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 'just', 'and', 'but', 'if', 'or', 'because', 'until', 'while', 'this', 'that', 'these', 'those', 'what', 'which', 'who', 'whom', 'its', 'it'];
+            const wordFreq = {};
+            
+            words.forEach(word => {
+                if (word.length > 3 && !stopWords.includes(word)) {
+                    wordFreq[word] = (wordFreq[word] || 0) + 1;
+                }
+            });
+
+            return Object.entries(wordFreq)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 20)
+                .map(([word]) => word.charAt(0).toUpperCase() + word.slice(1));
+        }
+
+        function findContextForKeyword(text, keyword) {
+            const sentences = text.split(/[.!?]+/);
+            for (const sentence of sentences) {
+                if (sentence.toLowerCase().includes(keyword.toLowerCase())) {
+                    return sentence.trim();
+                }
+            }
+            return null;
+        }
+
+        function generateQuizQuestion(sentence, keywords, difficulty, index) {
+            const words = sentence.split(/\s+/);
+            if (words.length < 4) return null;
+
+            const correctAnswer = sentence;
+            let question, wrongAnswers = [];
+
+            if (difficulty === 'easy') {
+                // Fill in the blank
+                const blankIndex = Math.floor(words.length / 2);
+                const blankWord = words[blankIndex];
+                const blanked = [...words];
+                blanked[blankIndex] = '______';
+                question = `Complete the blank: ${blanked.join(' ')}`;
+                wrongAnswers = keywords.slice(0, 4).filter(k => k.toLowerCase() !== blankWord.toLowerCase());
+            } else if (difficulty === 'medium') {
+                // True/False style
+                question = `Based on your notes: "${sentence.substring(0, 80)}..." - Is this correct?`;
+                wrongAnswers = ['This is partially incorrect', 'The details are inaccurate', 'This contradicts your notes'];
+            } else {
+                // Application/Analysis
+                question = `How would you apply this concept: "${sentence.substring(0, 60)}..."?`;
+                wrongAnswers = [
+                    'Ignore this concept entirely',
+                    'Use it for a different subject',
+                    'Memorize it without understanding'
+                ];
+            }
+
+            // Shuffle options
+            const allOptions = [correctAnswer, ...wrongAnswers.slice(0, 3)];
+            const shuffled = allOptions.sort(() => Math.random() - 0.5);
+
+            return {
+                question,
+                options: shuffled,
+                correct: correctAnswer,
+                answered: false,
+                userAnswer: null
+            };
+        }
+
+        // ===== FLASHCARDS =====
+        function updateFlashcardDisplay() {
+            const saved = localStorage.getItem('studyai_flashcards');
+            if (saved) state.flashcards = JSON.parse(saved);
+
+            if (state.flashcards.length === 0) {
+                elements.flashcardsEmpty.style.display = 'block';
+                elements.flashcardsActive.style.display = 'none';
+            } else {
+                elements.flashcardsEmpty.style.display = 'none';
+                elements.flashcardsActive.style.display = 'block';
+                elements.cardTotal.textContent = state.flashcards.length;
+                showCard(state.currentCardIndex);
+            }
+        }
+
+        function showCard(index) {
+            if (index < 0 || index >= state.flashcards.length) return;
+            
+            state.currentCardIndex = index;
+            elements.cardProgress.textContent = index + 1;
+            elements.cardFront.textContent = state.flashcards[index].question;
+            elements.cardBack.textContent = state.flashcards[index].answer;
+            elements.flashcard.classList.remove('flipped');
+
+            elements.prevCard.disabled = index === 0;
+            elements.nextCard.disabled = index === state.flashcards.length - 1;
+        }
+
+        elements.flashcard.addEventListener('click', () => {
+            elements.flashcard.classList.toggle('flipped');
+            sounds.flip();
+        });
+
+        elements.prevCard.addEventListener('click', () => {
+            showCard(state.currentCardIndex - 1);
+            sounds.click();
+        });
+
+        elements.nextCard.addEventListener('click', () => {
+            showCard(state.currentCardIndex + 1);
+            sounds.click();
+        });
+
+        elements.knowBtn.addEventListener('click', () => {
+            state.cardsStudied++;
+            updateStreak();
+            localStorage.setItem('studyai_stats', JSON.stringify({
+                cardsStudied: state.cardsStudied,
+                quizzesTaken: state.quizzesTaken,
+                totalQuizScore: state.totalQuizScore,
+                studyStreak: state.studyStreak,
+                lastStudyDate: state.lastStudyDate
+            }));
+            sounds.correct();
+            showCard(state.currentCardIndex + 1);
+        });
+
+        elements.dontKnowBtn.addEventListener('click', () => {
+            sounds.wrong();
+            showCard(state.currentCardIndex + 1);
+        });
+
+        elements.shuffleBtn.addEventListener('click', () => {
+            state.flashcards = state.flashcards.sort(() => Math.random() - 0.5);
+            showCard(0);
+            sounds.click();
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (!elements.flashcard.parentElement.offsetParent) return;
+            if (e.key === 'ArrowLeft') showCard(state.currentCardIndex - 1);
+            if (e.key === 'ArrowRight') showCard(state.currentCardIndex + 1);
+            if (e.key === ' ' || e.key === 'Enter') elements.flashcard.click();
+        });
+
+        // ===== QUIZ =====
+        function updateQuizDisplay() {
+            const saved = localStorage.getItem('studyai_quiz');
+            if (saved) state.quizQuestions = JSON.parse(saved);
+
+            if (state.quizQuestions.length === 0) {
+                elements.quizEmpty.style.display = 'block';
+                elements.quizActive.style.display = 'none';
+                elements.quizResult.style.display = 'none';
+            } else {
+                elements.quizEmpty.style.display = 'none';
+                elements.quizActive.style.display = 'block';
+                elements.quizResult.style.display = 'none';
+                state.quizScore = 0;
+                state.currentQuestionIndex = 0;
+                showQuestion(0);
+            }
+        }
+
+        function updateDifficultyBadge() {
+            const diff = state.settings.quizDifficulty;
+            elements.difficultyBadge.textContent = diff.charAt(0).toUpperCase() + diff.slice(1);
+            elements.difficultyBadge.className = 'difficulty-badge ' + diff;
+        }
+
+        function showQuestion(index) {
+            if (index >= state.quizQuestions.length) {
+                showQuizResult();
+                return;
+            }
+
+            state.currentQuestionIndex = index;
+            const q = state.quizQuestions[index];
+            
+            elements.questionNum.textContent = index + 1;
+            elements.questionText.textContent = q.question;
+            elements.currentScore.textContent = state.quizScore;
+
+            elements.quizOptions.innerHTML = '';
+            q.options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-option';
+                btn.textContent = option;
+                btn.addEventListener('click', () => selectAnswer(option, btn));
+                elements.quizOptions.appendChild(btn);
+            });
+
+            elements.prevQuestion.disabled = index === 0;
+            elements.nextQuestion.textContent = index === state.quizQuestions.length - 1 ? 'Finish' : 'Next';
+        }
+
+        function selectAnswer(answer, btn) {
+            const q = state.quizQuestions[state.currentQuestionIndex];
+            if (q.answered) return;
+
+            q.answered = true;
+            q.userAnswer = answer;
+
+            const buttons = elements.quizOptions.querySelectorAll('.quiz-option');
+            buttons.forEach(b => {
+                b.disabled = true;
+                if (b.textContent === q.correct) {
+                    b.classList.add('correct');
+                } else if (b === btn && answer !== q.correct) {
+                    b.classList.add('incorrect');
+                }
+            });
+
+            if (answer === q.correct) {
+                state.quizScore++;
+                sounds.correct();
+            } else {
+                sounds.wrong();
+            }
+
+            elements.currentScore.textContent = state.quizScore;
+        }
+
+        elements.prevQuestion.addEventListener('click', () => {
+            showQuestion(state.currentQuestionIndex - 1);
+            sounds.click();
+        });
+
+        elements.nextQuestion.addEventListener('click', () => {
+            showQuestion(state.currentQuestionIndex + 1);
+            sounds.click();
+        });
+
+        function showQuizResult() {
+            elements.quizActive.style.display = 'none';
+            elements.quizResult.style.display = 'block';
+
+            const percentage = Math.round((state.quizScore / state.quizQuestions.length) * 100);
+            elements.finalScore.textContent = percentage + '%';
+            elements.resultDetails.textContent = `You got ${state.quizScore} out of ${state.quizQuestions.length} correct`;
+
+            state.quizzesTaken++;
+            state.totalQuizScore += percentage;
+            updateStreak();
+
+            localStorage.setItem('studyai_stats', JSON.stringify({
+                cardsStudied: state.cardsStudied,
+                quizzesTaken: state.quizzesTaken,
+                totalQuizScore: state.totalQuizScore,
+                studyStreak: state.studyStreak,
+                lastStudyDate: state.lastStudyDate
+            }));
+        }
+
+        elements.retryQuiz.addEventListener('click', () => {
+            state.quizQuestions.forEach(q => {
+                q.answered = false;
+                q.userAnswer = null;
+            });
+            state.quizScore = 0;
+            state.currentQuestionIndex = 0;
+            updateQuizDisplay();
+            sounds.click();
+        });
+
+        // ===== STATS =====
+        function loadStats() {
+            const saved = localStorage.getItem('studyai_stats');
+            if (saved) {
+                const stats = JSON.parse(saved);
+                state.cardsStudied = stats.cardsStudied || 0;
+                state.quizzesTaken = stats.quizzesTaken || 0;
+                state.totalQuizScore = stats.totalQuizScore || 0;
+                state.studyStreak = stats.studyStreak || 0;
+                state.lastStudyDate = stats.lastStudyDate;
+            }
+        }
+
+        function updateStreak() {
+            const today = new Date().toDateString();
+            if (state.lastStudyDate !== today) {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                if (state.lastStudyDate === yesterday.toDateString()) {
+                    state.studyStreak++;
+                } else if (state.lastStudyDate !== today) {
+                    state.studyStreak = 1;
+                }
+                state.lastStudyDate = today;
+            }
+        }
+
+        function updateStatsDisplay() {
+            loadStats();
+            elements.cardsStudied.textContent = state.cardsStudied;
+            elements.studyStreak.textContent = state.studyStreak;
+            elements.quizzesTaken.textContent = state.quizzesTaken;
+            elements.avgScore.textContent = state.quizzesTaken > 0 
+                ? Math.round(state.totalQuizScore / state.quizzesTaken) + '%' 
+                : '0%';
+        }
+
+        // ===== CHATBOX =====
+        // Floating chatbox
+        elements.chatToggle.addEventListener('click', () => {
+            elements.chatbox.classList.toggle('open');
+            sounds.click();
+        });
+
+        elements.chatClose.addEventListener('click', () => {
+            elements.chatbox.classList.remove('open');
+            sounds.click();
+        });
+
+        elements.chatSend.addEventListener('click', sendMessage);
+        elements.chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Chat tab elements
+        elements.chatMessagesTab = document.getElementById('chatMessagesTab');
+        elements.chatInputTab = document.getElementById('chatInputTab');
+        elements.chatSendTab = document.getElementById('chatSendTab');
+        elements.chatTypingTab = document.getElementById('chatTypingTab');
+
+        function sendMessageTab() {
+            const message = elements.chatInputTab.value.trim();
+            if (!message) return;
+
+            addMessageTab(message, 'user');
+            elements.chatInputTab.value = '';
+
+            // Show typing indicator
+            elements.chatTypingTab.style.display = 'flex';
+
+            setTimeout(() => {
+                elements.chatTypingTab.style.display = 'none';
+                const response = generateAIResponse(message);
+                addMessageTab(response, 'ai');
+            }, 1000 + Math.random() * 1000);
+        }
+
+        function addMessageTab(text, type) {
+            const msg = document.createElement('div');
+            msg.className = `chat-message-tab ${type}`;
+            msg.textContent = text;
+            elements.chatMessagesTab.insertBefore(msg, elements.chatTypingTab);
+            elements.chatMessagesTab.scrollTop = elements.chatMessagesTab.scrollHeight;
+        }
+
+        elements.chatSendTab.addEventListener('click', sendMessageTab);
+        elements.chatInputTab.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessageTab();
+            }
+        });
+
+        function sendMessage() {
+            const message = elements.chatInput.value.trim();
+            if (!message) return;
+
+            addMessage(message, 'user');
+            elements.chatInput.value = '';
+
+            // Show typing indicator
+            elements.chatTyping.classList.add('visible');
+
+            setTimeout(() => {
+                elements.chatTyping.classList.remove('visible');
+                const response = generateAIResponse(message);
+                addMessage(response, 'ai');
+            }, 1000 + Math.random() * 1000);
+        }
+
+        function addMessage(text, type) {
+            const msg = document.createElement('div');
+            msg.className = `chat-message ${type}`;
+            msg.textContent = text;
+            elements.chatMessages.insertBefore(msg, elements.chatTyping);
+            elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+        }
+
+        function generateAIResponse(message) {
+            const msg = message.toLowerCase();
+            const notes = elements.notesInput.value;
+            
+            // Check if message relates to notes
+            const keywords = extractKeywords(notes);
+            const related = keywords.filter(k => msg.includes(k.toLowerCase()));
+
+            const responses = [
+                "That's a great question! Let me help you understand this better.",
+                "Based on your study material, I can explain this concept in more detail.",
+                "Great question! Here's what you need to know:",
+                "Let me break this down for you:",
+                "That's an important topic from your notes. Here's the key point:"
+            ];
+
+            if (related.length > 0) {
+                const context = findContextForKeyword(notes, related[0]);
+                if (context) {
+                    return `${responses[Math.floor(Math.random() * responses.length)]} ${context}`;
+                }
+            }
+
+            // General study responses
+            const generalResponses = [
+                "I'd recommend reviewing your notes on this topic. Try creating more flashcards for better retention!",
+                "A good study technique is to break complex topics into smaller, manageable parts.",
+                "Remember: consistent, shorter study sessions are often more effective than long cramming sessions.",
+                "Try explaining this concept out loud - it's a great way to test your understanding!",
+                "Consider making connections between this concept and others in your notes for better memory retention.",
+                "Don't forget to take breaks! Your brain needs time to process and store information.",
+                "Testing yourself regularly is one of the best ways to strengthen memory.",
+                "Would you like me to help you create more flashcards on this topic?"
+            ];
+
+            return generalResponses[Math.floor(Math.random() * generalResponses.length)];
+        }
+
+        // ===== SETTINGS PANEL =====
+        if (elements.settingsBtn) {
+            elements.settingsBtn.addEventListener('click', () => {
+                elements.settingsPanel.classList.add('open');
+                elements.settingsOverlay.classList.add('open');
+                try {
+                    if (sounds && sounds.click) sounds.click();
+                } catch (e) {
+                    console.log('Sound error:', e);
+                }
+            });
+        }
+
+        if (elements.settingsClose) {
+            elements.settingsClose.addEventListener('click', () => {
+                elements.settingsPanel.classList.remove('open');
+                elements.settingsOverlay.classList.remove('open');
+                try {
+                    if (sounds && sounds.click) sounds.click();
+                } catch (e) {
+                    console.log('Sound error:', e);
+                }
+            });
+        }
+
+        if (elements.settingsOverlay) {
+            elements.settingsOverlay.addEventListener('click', () => {
+                elements.settingsPanel.classList.remove('open');
+                elements.settingsOverlay.classList.remove('open');
+            });
+        }
+
+        // GUI Scale
+        elements.guiScale.addEventListener('input', () => {
+            state.settings.guiScale = parseFloat(elements.guiScale.value);
+            elements.guiScaleValue.textContent = state.settings.guiScale.toFixed(1);
+            applySettings();
+            saveSettings();
+        });
+
+        // Font Family
+        elements.fontFamily.addEventListener('change', () => {
+            state.settings.fontFamily = elements.fontFamily.value;
+            applySettings();
+            saveSettings();
+            sounds.click();
+        });
+
+        // Card Amount
+        elements.cardAmount.addEventListener('input', () => {
+            state.settings.cardAmount = parseInt(elements.cardAmount.value);
+            elements.cardAmountValue.textContent = state.settings.cardAmount;
+            applySettings();
+            saveSettings();
+        });
+
+        // Color options
+        document.querySelectorAll('.color-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                state.settings.accentColor = btn.dataset.color;
+                applySettings();
+                saveSettings();
+                sounds.click();
+            });
+        });
+
+        // Theme options
+        document.querySelectorAll('.theme-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                state.settings.theme = btn.dataset.theme;
+                applySettings();
+                saveSettings();
+                sounds.click();
+            });
+        });
+
+        // Quiz difficulty
+        elements.quizDifficulty.addEventListener('change', () => {
+            state.settings.quizDifficulty = elements.quizDifficulty.value;
+            applySettings();
+            saveSettings();
+            sounds.click();
+        });
+
+        // Sound settings
+        elements.soundEnabled.addEventListener('change', () => {
+            state.settings.soundEnabled = elements.soundEnabled.checked;
+            saveSettings();
+            if (state.settings.soundEnabled) sounds.click();
+        });
+
+        elements.volume.addEventListener('input', () => {
+            state.settings.volume = parseInt(elements.volume.value);
+            elements.volumeValue.textContent = state.settings.volume + '%';
+            saveSettings();
+        });
+
+        // ===== AUTO THEME LISTENER =====
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            if (state.settings.theme === 'auto') {
+                applySettings();
+            }
+        });
+
+        // ===== INITIALIZE =====
+        loadSettings();
+        loadStats();
+    </script>
+</body>
+</html>
