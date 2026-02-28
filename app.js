@@ -18,6 +18,11 @@ if (!supabaseUrl || !supabaseKey) {
   console.warn('Please add SUPABASE_URL and SUPABASE_KEY to your .env file');
 }
 
+// validate environment before creating client
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Supabase environment variables missing:', { supabaseUrl, supabaseKey });
+  throw new Error('Supabase credentials not provided. Set SUPABASE_URL and SUPABASE_KEY in environment.');
+}
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Set view engine to EJS
@@ -26,6 +31,11 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Middleware
 const cors = require('cors');
+// simple request logger
+app.use((req, res, next) => {
+  console.log('Incoming request', req.method, req.url);
+  next();
+});
 app.use(cors()); // allow all origins during development
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
@@ -240,6 +250,12 @@ if (process.env.NODE_ENV !== 'production') {
     console.log(`📦 Supabase connected: ${supabaseUrl ? 'Yes ✓' : 'No ✗'}`);
   });
 }
+
+// catch-all error handler for Express
+app.use((err, req, res, next) => {
+  console.error('Unhandled express error', err);
+  res.status(500).json({ error: err.message });
+});
 
 // Export for Vercel serverless functions
 module.exports = app;
